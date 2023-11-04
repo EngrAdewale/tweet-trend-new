@@ -46,3 +46,5 @@ stage("Quality Gate"){
         // Add more stages for your build and deployment steps here
     }
 }
+    }
+}
