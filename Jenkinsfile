@@ -42,6 +42,7 @@ stage("Quality Gate"){
     }
   }
 }
+  
          stage("Jar Publish") {
         steps {
             script {
