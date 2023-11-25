@@ -30,11 +30,11 @@ pipeline {
 
         stage('SonarQube analysis') {
             environment {
-                scannerHome = tool 'Adewale-sonar-scanner'
+                scannerHome = tool 'devopsworkshop-sonar-scanner'
             }
 
             steps {
-                withSonarQubeEnv('Adewale-sonarqube-server') {
+                withSonarQubeEnv('devopsworkshop-sonarqube-server') {
                     sh "${scannerHome}/bin/sonar-scanner"
                 }
             }
