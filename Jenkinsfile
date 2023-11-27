@@ -8,23 +8,23 @@ pipeline {
     }
 
     stages {
-        stage("build") {
+        stage("Build") {
             steps {
-                echo "----------- build started ----------"
+                echo "----------- Build started ----------"
                 sh 'mvn clean deploy -Dmaven.test.skip=true'
-                echo "----------- build completed ----------"
+                echo "----------- Build completed ----------"
             }
         }
 
-        stage("test") {
+        stage("Unit Test") {
             steps {
-                echo "----------- unit test started ----------"
+                echo "----------- Unit test started ----------"
                 sh 'mvn surefire-report:report'
-                echo "----------- unit test Completed ----------"
+                echo "----------- Unit test completed ----------"
             }
         }
 
-        stage('SonarQube analysis') {
+        stage('SonarQube Analysis') {
             environment {
                 scannerHome = tool 'devopsworkshop-sonar-scanner'
             }
@@ -48,3 +48,5 @@ pipeline {
                 }
             }
         }
+    }
+}
