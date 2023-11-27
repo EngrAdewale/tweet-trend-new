@@ -16,3 +16,4 @@ pipeline {
             }
         }
     }
+}  // Added this closing brace
