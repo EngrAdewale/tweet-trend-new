@@ -1,6 +1,5 @@
 def registry = 'https://bella01.jfrog.io/'
 
-
 pipeline {
     agent {
         label 'maven'
@@ -11,23 +10,23 @@ pipeline {
     }
 
     stages {
-        stage("build") {
+        stage('Build') {
             steps {
-                echo "----------- build started ----------"
+                echo '----------- Build started -----------'
                 sh 'mvn clean deploy -Dmaven.test.skip=true'
-                echo "----------- build completed ----------"
+                echo '----------- Build completed -----------'
             }
         }
 
-        stage("test") {
+        stage('Unit Test') {
             steps {
-                echo "----------- unit test started ----------"
+                echo '----------- Unit test started -----------'
                 sh 'mvn surefire-report:report'
-                echo "----------- unit test Completed ----------"
+                echo '----------- Unit test completed -----------'
             }
         }
 
-        stage('SonarQube analysis') {
+        stage('SonarQube Analysis') {
             environment {
                 scannerHome = tool 'devopsworkshop-sonar-scanner'
             }
@@ -39,7 +38,7 @@ pipeline {
             }
         }
 
-        stage("Quality Gate") {
+        stage('Quality Gate') {
             steps {
                 script {
                     timeout(time: 1, unit: 'HOURS') {
@@ -52,18 +51,18 @@ pipeline {
             }
         }
 
-        stage("Jar Publish") {
+        stage('Jar Publish') {
             steps {
                 script {
                     echo '<--------------- Jar Publish Started --------------->'
-                    def server = Artifactory.newServer(url: registry + "/artifactory", credentialsId: "artifact-cred")
+                    def server = Artifactory.newServer(url: "${registry}/artifactory", credentialsId: 'artifact-cred')
                     def properties = "buildid=${env.BUILD_ID},commitid=${GIT_COMMIT}"
                     def uploadSpec = """{
                         "files": [
                             {
-                                "pattern": "jarstaging/(*)",
+                                "pattern": "jarstaging/*",
                                 "target": "libs-release-local/{1}",
-                                "flat": "false",
+                                "flat": false,
                                 "props": "${properties}",
                                 "exclusions": ["*.sha1", "*.md5"]
                             }
@@ -76,3 +75,5 @@ pipeline {
                 }
             }
         }
+    }
+}
