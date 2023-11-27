@@ -8,19 +8,44 @@ pipeline {
     }
 
     stages {
-        stage("build") {
+        stage("Build") {
             steps {
-                echo "----------- build started ----------"
+                echo "----------- Build started ----------"
                 sh 'mvn clean deploy -Dmaven.test.skip=true'
-                echo "----------- build completed ----------"
+                echo "----------- Build completed ----------"
             }
         }
 
-        stage("test") {
+        stage("Unit Test") {
             steps {
-                echo "----------- unit test started ----------"
+                echo "----------- Unit test started ----------"
                 sh 'mvn surefire-report:report'
-                echo "----------- unit test Completed ----------"
+                echo "----------- Unit test completed ----------"
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            environment {
+                scannerHome = tool 'Adewale-sonar-scanner'
+            }
+
+            steps {
+                withSonarQubeEnv('Adewale-sonarqube-server') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
+
+        stage("Quality Gate") {
+            steps {
+                script {
+                    timeout(time: 1, unit: 'HOURS') {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        }
+                    }
+                }
             }
         }
     }
